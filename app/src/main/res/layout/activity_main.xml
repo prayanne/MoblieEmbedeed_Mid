@@ -14,7 +14,7 @@
         android:orientation="vertical">
         <View
             android:layout_width="match_parent"
-            android:layout_height="100dp"/>
+            android:layout_height="0dp"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,6 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:layout_marginTop="25dp"
             android:paddingRight="20dp"
             android:gravity="end"
             android:textColor="#D0D0D0"
@@ -35,7 +36,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="55sp"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:text="0"
             android:paddingRight="20dp"
             android:gravity="end"
             android:id="@+id/valueView"/>
@@ -57,7 +60,7 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
+        android:layout_weight="7"
         android:padding="3dp"
         android:rowCount="6"
         android:columnCount="4">

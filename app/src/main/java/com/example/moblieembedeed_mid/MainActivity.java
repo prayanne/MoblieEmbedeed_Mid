@@ -1,6 +1,7 @@
 package com.example.moblieembedeed_mid;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -21,7 +22,9 @@ public class MainActivity extends AppCompatActivity {
     String fstVal = "";
     String secVal = "";
     String oprVal = "";
-
+    double result = 0;
+    Boolean fstDot = false;
+    Boolean secDot = false;
     Boolean oprSta = false;
     Boolean eqrSta = false;
 
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     final String s = b.getTag().toString();
+                    if(eqrSta){ reset();}
                     setNum(s);
                     printMainView();
                 }
@@ -64,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     final String operator = b.getTag().toString();
+                    if(eqrSta){
+                        eqrSta = false;
+                        result2fstVal();
+                    }
                     setOpr(operator);
                     printMainView();
                     printCalcView();
@@ -73,20 +81,55 @@ public class MainActivity extends AppCompatActivity {
         binding.calcE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                double result = 0;
-                eqrSta = true;
+                if(!eqrSta){
+                    eqrSta = true;
+                }
+                calcVal();
                 printMainView();
                 printCalcView();
-                result = calcVal();
-
-                eqrSta = false;
+                result2fstVal();
             }
         });
-
+        binding.calcC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reset();
+            }
+        });
+        binding.calcCE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!oprSta){fstVal = "0";}
+                else { secVal = "0";}
+                printMainView();
+            }
+        });
+        binding.calcB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backSpace();
+            }
+        });
+        binding.calcPM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                funcPM();
+                printMainView();
+            }
+        });
+        binding.calcDot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                putDot();
+                printMainView();
+            }
+        });
     }
     void setNum(String s){
         String tmp;
-        tmp = binding.valueView.getText().toString() + s;
+        tmp = binding.valueView.getText().toString();
+        if(tmp.equals("0")){tmp = "";}
+        tmp += s;
         if(!oprSta){fstVal = tmp;}
         else{secVal = tmp;}
     }
@@ -95,14 +138,14 @@ public class MainActivity extends AppCompatActivity {
         oprSta = true;
         oprVal = s;
     }
-    void printMainView(String s){
+
+    void printMainView(){
         if(!eqrSta){
             if(!oprSta){ binding.valueView.setText(fstVal);}
             else{ binding.valueView.setText(secVal);}
         } else {
-            binding.valueView.setText(s);
+            binding.valueView.setText(String.format("%.3f", result));
         }
-
     }
     void printCalcView(){
         String tmp = fstVal + " " + oprVal + " " + secVal;
@@ -110,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
         else{ binding.valueCalc.setText(tmp + " ="); }
     }
 
-    double calcVal(){
-        double result = 0;
+    void calcVal(){
+        result = 0;
 
         switch(oprVal){
             case "+": result = Double.parseDouble(fstVal) + Double.parseDouble(secVal); break;
@@ -119,7 +162,78 @@ public class MainActivity extends AppCompatActivity {
             case "x": result = Double.parseDouble(fstVal) * Double.parseDouble(secVal); break;
             case "/": result = Double.parseDouble(fstVal) / Double.parseDouble(secVal); break;
         }
-
-        return result;
     }
+
+    void putDot(){
+        if(!oprSta){
+            if(fstVal.equals("")) fstVal = "0";
+            if(!fstDot) {
+                fstDot = true;
+                fstVal += ".";
+            }
+        } else {
+            if(secVal.equals("")) secVal = "0";
+            if(!secDot) {
+                fstDot = true;
+                secVal += ".";
+            }
+        }
+    }
+
+    void backSpace(){
+        String tmp = "";
+        if(!oprSta){
+            tmp  = fstVal.substring(0, fstVal.length()-1);
+            if(tmp.equals("")){ tmp = "0";}
+            fstVal = tmp;
+        } else {
+            tmp  = secVal.substring(0, secVal.length()-1);
+            if(tmp.equals("")){ tmp = "0";}
+            secVal = tmp;
+        }
+        printMainView();
+    }
+
+    void reset(){
+        eqrSta = false; oprSta = false;
+        fstDot = false; secDot = false;
+        fstVal = ""; secVal = ""; oprVal=""; result = 0;
+        printCalcView();
+
+        fstVal = "0";
+        printMainView();
+    }
+
+    void result2fstVal(){
+        fstVal = Double.toString(result);
+    }
+    void funcPM(){
+        String tmp = "";
+        if(!oprSta){
+            try {
+                tmp = fstVal.substring(0, 1);
+            } catch (Exception e){
+                tmp = "";
+            }
+            switch (tmp){
+                case "" : fstVal = "0"; break;
+                case "0": break;
+                case "-": fstVal = fstVal.substring(1, fstVal.length()); break;
+                default: fstVal = "-" + fstVal; break;
+            }
+        } else {
+            try {
+                tmp = secVal.substring(0, 1);
+            } catch (Exception e) {
+                tmp = "0";
+            }
+            switch (tmp){
+                case "" : secVal = "0"; break;
+                case "0": break;
+                case "-": secVal = secVal.substring(1, secVal.length()); break;
+                default: secVal = "-" + secVal; break;
+            }
+        }
+    }
+
 }
