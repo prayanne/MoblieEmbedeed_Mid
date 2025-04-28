@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="btn_base" parent="Widget.AppCompat.Button">
+        <item name="android:textSize">17sp</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="btn_grid" parent="btn_base">
+        <item name="android:layout_rowWeight">1</item>
+        <item name="android:layout_columnWeight">1</item>
+    </style>
+    <style name="btn_num" parent="btn_grid">
+        <item name="backgroundTint">#E6E6E6</item>
+    </style>
+    <style name="btn_Nnum" parent="btn_grid">
+        <item name="backgroundTint">#C3C3C3</item>
+    </style>
+    <style name="btn_NnumE" parent="btn_grid">
+        <item name="backgroundTint">#03A9F4</item>
+    </style>
+
+    <style name="btn_NnumM" parent="btn_base">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:textSize">10sp</item>
+        <item name="backgroundTint">#00FFFFFF</item>
+    </style>
+</resources>
