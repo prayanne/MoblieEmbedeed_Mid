@@ -23,10 +23,15 @@ public class MainActivity extends AppCompatActivity {
     String secVal = "";
     String oprVal = "";
     double result = 0;
+
     Boolean fstDot = false;
     Boolean secDot = false;
+
     Boolean oprSta = false;
     Boolean eqrSta = false;
+
+    String memory = "0";
+    Boolean memSta = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         List<Button> buttons_opr = Arrays.asList(
                 binding.calcD, binding.calcX, binding.calcM, binding.calcP
         );
+
 
         for(Button b: buttons_num){
             b.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
         binding.calcE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,6 +129,49 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 putDot();
                 printMainView();
+            }
+        });
+
+
+        //memory
+        List<Button> buttons_mem = Arrays.asList(
+                binding.calcMP, binding.calcMM
+        );
+        for(Button b: buttons_mem){
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final String s = b.getTag().toString();
+                    if(binding.valueView.getText().toString().equals("")){
+                        binding.valueView.setText("0");
+                    }
+                    calcMem(s);
+                    printMainView();
+                    memShow();
+                }
+            });
+        }
+        binding.calcMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                memSave();
+                printMainView();
+                memShow();
+            }
+        });
+        binding.calcMR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                memRead();
+                printMainView();
+                memShow();
+            }
+        });
+        binding.calcMC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                memReset();
+                memShow();
             }
         });
     }
@@ -234,6 +284,34 @@ public class MainActivity extends AppCompatActivity {
                 default: secVal = "-" + secVal; break;
             }
         }
+    }
+
+    // memory func
+    void memSave(){
+        memSta = true;
+        String tmp = binding.valueView.getText().toString();
+        memory = tmp;
+    }
+    void memRead(){
+        if(memSta){
+            if(!oprSta) fstVal = memory;
+            else secVal = memory;
+        }
+    }
+    void memReset(){
+        memory = "0";
+        memSta = false;
+    }
+    void calcMem(String op){
+        memSta = true;
+        String tmp =  binding.valueView.getText().toString();
+        switch(op){
+            case "+": memory = Double.toString(Double.parseDouble(memory) + Double.parseDouble(tmp)); break;
+            case "-": memory = Double.toString(Double.parseDouble(memory) - Double.parseDouble(tmp)); break;
+        }
+    }
+    void memShow(){
+        binding.memtext.setText(String.format("%.3f", Double.parseDouble(memory)));
     }
 
 }

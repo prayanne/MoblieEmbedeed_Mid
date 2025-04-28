@@ -42,6 +42,13 @@
             android:paddingRight="20dp"
             android:gravity="end"
             android:id="@+id/valueView"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:paddingRight="20dp"
+            android:gravity="end"
+            android:id="@+id/memtext"/>
 
     </LinearLayout>
 
@@ -51,8 +58,8 @@
         android:orientation="horizontal">
         <Button android:id="@+id/calcMC" android:text="MC" style="@style/btn_NnumM"/>
         <Button android:id="@+id/calcMR" android:text="MR" style="@style/btn_NnumM"/>
-        <Button android:id="@+id/calcMP" android:text="MP" style="@style/btn_NnumM"/>
-        <Button android:id="@+id/calcMM" android:text="MM" style="@style/btn_NnumM"/>
+        <Button android:id="@+id/calcMP" android:text="MP" android:tag="+" style="@style/btn_NnumM"/>
+        <Button android:id="@+id/calcMM" android:text="MM" android:tag="-" style="@style/btn_NnumM"/>
         <Button android:id="@+id/calcMS" android:text="MS" style="@style/btn_NnumM"/>
         <Button android:id="@+id/calcMMore" android:text="M" style="@style/btn_NnumM"/>
     </LinearLayout>
