@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
-    String fstVal = "";
+    String fstVal = "0";
     String secVal = "";
     String oprVal = "";
     double result = 0;
@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     Boolean oprSta = false;
     Boolean eqrSta = false;
+    Boolean zeroSta = false;
 
     String memory = "0";
     Boolean memSta = false;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     final String s = b.getTag().toString();
                     if(eqrSta){ reset();}
+//                    if(s.equals("0")){zeroSta = true;}
                     setNum(s);
                     printMainView();
                 }
@@ -205,7 +207,8 @@ public class MainActivity extends AppCompatActivity {
 
     void calcVal(){
         result = 0;
-
+        if(fstVal.equals("")) fstVal = "0";
+        if(secVal.equals("")) secVal = "0";
         switch(oprVal){
             case "+": result = Double.parseDouble(fstVal) + Double.parseDouble(secVal); break;
             case "-": result = Double.parseDouble(fstVal) - Double.parseDouble(secVal); break;
