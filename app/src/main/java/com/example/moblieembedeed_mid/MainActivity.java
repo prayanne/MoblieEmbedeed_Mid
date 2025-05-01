@@ -8,17 +8,21 @@ import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.moblieembedeed_mid.databinding.ActivityMainBinding;
+import com.example.moblieembedeed_mid.databinding.CalculatorBinding;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
+    private CalculatorBinding binding;
+    private ActivityMainBinding drawerBinding;
+
     String fstVal = "0";
     String secVal = "";
     String oprVal = "";
@@ -39,14 +43,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        drawerBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = drawerBinding.contentCalculator;
+
+        setContentView(drawerBinding.getRoot());
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // drawer View
+        binding.btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerBinding.drawerView.openDrawer(GravityCompat.END);
+            }
+        });
+
+        // list of buttons
         List<Button> buttons_num = Arrays.asList(
                 binding.calc0, binding.calc1, binding.calc2,
                 binding.calc3, binding.calc4, binding.calc5,
@@ -58,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 binding.calcD, binding.calcX, binding.calcM, binding.calcP
         );
 
-
+        // binding, clickLinstener
         for(Button b: buttons_num){
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -177,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    //calc func
     void setNum(String s){
         String tmp;
         tmp = binding.valueView.getText().toString();
@@ -247,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
         printMainView();
     }
 
+    // deafult func
     void reset(){
         eqrSta = false; oprSta = false;
         fstDot = false; secDot = false;
@@ -314,7 +332,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     void memShow(){
-        binding.memtext.setText(String.format("%.3f", Double.parseDouble(memory)));
+        String tmp = String.format("%.3f", Double.parseDouble(memory));
+//        binding.memtext.setText(tmp);
+        drawerBinding.MemoryVal.setText(tmp);
     }
 
+    // drawer func
+    @Override
+    public void onBackPressed(){
+        if (drawerBinding.drawerView.isDrawerOpen(GravityCompat.END)) {
+            drawerBinding.drawerView.closeDrawer(GravityCompat.END);
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
