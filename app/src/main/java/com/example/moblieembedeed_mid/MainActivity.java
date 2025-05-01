@@ -16,12 +16,14 @@ import com.example.moblieembedeed_mid.databinding.ActivityMainBinding;
 import com.example.moblieembedeed_mid.databinding.CalculatorBinding;
 
 import java.lang.reflect.Array;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private CalculatorBinding binding;
     private ActivityMainBinding drawerBinding;
+
 
     String fstVal = "0";
     String secVal = "";
@@ -33,10 +35,13 @@ public class MainActivity extends AppCompatActivity {
 
     Boolean oprSta = false;
     Boolean eqrSta = false;
-    Boolean zeroSta = false;
 
     String memory = "0";
     Boolean memSta = false;
+
+    private static final DecimalFormat DF = new DecimalFormat("0.###########");
+    String deco_result = DF.format(result);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // drawer View
-        binding.btnHistory.setOnClickListener(new View.OnClickListener() {
+        binding.calcMMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerBinding.drawerView.openDrawer(GravityCompat.END);
@@ -72,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
         List<Button> buttons_opr = Arrays.asList(
                 binding.calcD, binding.calcX, binding.calcM, binding.calcP
         );
+        List<Button> buttons_UnOpr = Arrays.asList(
+                binding.calcL, binding.calc1px, binding.calcX2, binding.calcRoot
+        );
+
 
         // binding, clickLinstener
         for(Button b: buttons_num){
@@ -101,6 +110,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+        for(Button b: buttons_UnOpr){
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final String operator = b.getTag().toString();
+                    if(!eqrSta){
+                        eqrSta = true;
+                    }
+                    secVal = "0";
+
+                    setOpr(operator);
+                    oprSta = false;
+                    calcUnVal();
+                    printMainView();
+                    printUnCalcView();
+                    result2fstVal();
+                }
+            });
+        }
 
         binding.calcE.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,10 +136,12 @@ public class MainActivity extends AppCompatActivity {
                 if(!eqrSta){
                     eqrSta = true;
                 }
-                calcVal();
-                printMainView();
-                printCalcView();
-                result2fstVal();
+                if(!(oprVal.equals("sqr") || oprVal.equals("1/") || oprVal.equals("√"))){
+                    calcVal();
+                    printMainView();
+                    printCalcView();
+                    result2fstVal();
+                }
             }
         });
         binding.calcC.setOnClickListener(new View.OnClickListener() {
@@ -213,13 +243,25 @@ public class MainActivity extends AppCompatActivity {
             if(!oprSta){ binding.valueView.setText(fstVal);}
             else{ binding.valueView.setText(secVal);}
         } else {
-            binding.valueView.setText(String.format("%.3f", result));
+            //binding.valueView.setText(String.format("0.###", result));
+            String deco_result = DF.format(result);
+            binding.valueView.setText(deco_result);
         }
     }
     void printCalcView(){
-        String tmp = fstVal + " " + oprVal + " " + secVal;
+        String tmp = fstVal + " " + oprVal;
+        String temp = fstVal + " " + oprVal + " " + secVal;
+
         if(!eqrSta){ binding.valueCalc.setText(tmp); }
-        else{ binding.valueCalc.setText(tmp + " ="); }
+        else{ binding.valueCalc.setText(temp + " ="); }
+    }
+    void printUnCalcView(){
+        switch (oprVal){
+            case "sqr": binding.valueCalc.setText( "spr(" + fstVal + ")"); break;
+            case "1/" : binding.valueCalc.setText("1/(" +  fstVal + ")" ); break;
+            case "√"  : binding.valueCalc.setText("√" + fstVal); break;
+            case "%"  : binding.valueCalc.setText(""); break;
+        }
     }
 
     void calcVal(){
@@ -234,6 +276,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    void calcUnVal(){
+        result = 0;
+        if(fstVal.equals("")) fstVal = "0";
+        if(secVal.equals("")) secVal = "0";
+        if(!oprSta){
+            switch (oprVal){
+                case "sqr": result = Double.parseDouble(fstVal) * Double.parseDouble(fstVal); break;
+                case "1/": result = 1 / Double.parseDouble(fstVal); break;
+                case "√" : result = Math.sqrt(Double.parseDouble(fstVal)); break;
+                case "%" : result = Double.parseDouble(fstVal) / 100; break;
+            }
+}
+    }
     void putDot(){
         if(!oprSta){
             if(fstVal.equals("")) fstVal = "0";
@@ -278,34 +333,34 @@ public class MainActivity extends AppCompatActivity {
     void result2fstVal(){
         fstVal = Double.toString(result);
     }
-    void funcPM(){
+    void funcPM() {
         String tmp = "";
-        if(!oprSta){
-            try {
-                tmp = fstVal.substring(0, 1);
-            } catch (Exception e){
-                tmp = "";
-            }
-            switch (tmp){
-                case "" : fstVal = "0"; break;
-                case "0": break;
-                case "-": fstVal = fstVal.substring(1, fstVal.length()); break;
-                default: fstVal = "-" + fstVal; break;
-            }
+        Double temp = 0.0;
+        if (!oprSta) {
+            fstVal = funcPM_opt(fstVal);
         } else {
-            try {
-                tmp = secVal.substring(0, 1);
-            } catch (Exception e) {
-                tmp = "0";
-            }
-            switch (tmp){
-                case "" : secVal = "0"; break;
-                case "0": break;
-                case "-": secVal = secVal.substring(1, secVal.length()); break;
-                default: secVal = "-" + secVal; break;
-            }
+            secVal = funcPM_opt(secVal);
         }
     }
+    String funcPM_opt(String s){
+        String tmp = "";
+        Double temp = 0.0;
+        try {
+            tmp = s.substring(0, 1);
+            temp = Double.parseDouble(s);
+        } catch (Exception e){
+            tmp = "";
+        }
+        if(temp != 0.0){
+            switch (tmp){
+                case "" : return "0";
+                case "-": return s.substring(1, s.length());
+                default: return "-" + s;
+            }
+        }
+        return "0";
+    }
+
 
     // memory func
     void memSave(){
@@ -332,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     void memShow(){
-        String tmp = String.format("%.3f", Double.parseDouble(memory));
+        String tmp = deco_result = DF.format(Double.parseDouble(memory));
 //        binding.memtext.setText(tmp);
         drawerBinding.MemoryVal.setText(tmp);
     }
